@@ -1,4 +1,4 @@
-A repository containing useful lua tools, for use on the monome norns sound computer.
+A repository containing useful lua tools, for use on the [monome norns](https://monome.org/docs/norns/) sound computer.
 
 # installation
 The repo should be cloned into `code/tools`, ex. while SSHed into norns run
@@ -15,8 +15,11 @@ git clone https://github.com/evannjohnson/norns-lua-tools.git /home/we/dust/code
 - [base64](http://lua-users.org/wiki/BaseSixtyFour)
 - [lunajson](https://github.com/grafi-tt/lunajson)
 - [Penlight](https://github.com/lunarmodules/Penlight)
+- [debugger.lua](https://github.com/slembcke/debugger.lua)
 
 # notes
+`.lua` files are directly copied rather than using submodules. This is for simplicity. However, it means I must manually update this library. If you need me to update something in this library, let me know.
+
 ## compilation
 - compiled `.so` files go into `./bin`, and `package.cpath` needs to have this dir appended to it, `require("tools.add_tools_cpath")()` will accomplish this
   - I have added this to some of the files when it is needed
