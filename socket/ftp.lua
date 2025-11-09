@@ -1,3 +1,4 @@
+require("tools.add_tools_path")()
 -----------------------------------------------------------------------------
 -- FTP support for the Lua language
 -- LuaSocket toolkit.

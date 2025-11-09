@@ -1,3 +1,4 @@
+require("tools.add_tools_path")()
 -----------------------------------------------------------------------------
 -- Unified SMTP/FTP subsystem
 -- LuaSocket toolkit.

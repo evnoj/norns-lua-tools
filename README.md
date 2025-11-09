@@ -40,3 +40,4 @@ mkdir -p ../../bin/mime
 mv mime-1.0.3.so ../../bin/mime/core.so
 ```
   - modify `socket.lua` to call `add_tools_cpath`
+  - modify `socket.lua`'s submodules' to call `add_tools_path`

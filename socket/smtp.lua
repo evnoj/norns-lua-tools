@@ -1,3 +1,4 @@
+require("tools.add_tools_path")()
 -----------------------------------------------------------------------------
 -- SMTP client support for the Lua language.
 -- LuaSocket toolkit.

@@ -1,3 +1,4 @@
+require("tools.add_tools_path")()
 -----------------------------------------------------------------------------
 -- Canonic header field capitalization
 -- LuaSocket toolkit.

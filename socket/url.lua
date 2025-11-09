@@ -1,3 +1,4 @@
+require("tools.add_tools_path")()
 -----------------------------------------------------------------------------
 -- URI parsing, composition and relative URL resolution
 -- LuaSocket toolkit.

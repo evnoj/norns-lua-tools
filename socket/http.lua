@@ -1,3 +1,4 @@
+require("tools.add_tools_path")()
 -----------------------------------------------------------------------------
 -- HTTP/1.1 client support for the Lua language.
 -- LuaSocket toolkit.
