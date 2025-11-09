@@ -10,6 +10,8 @@ local COLOR_BLUE = ""
 local COLOR_YELLOW = ""
 local COLOR_RESET = ""
 local GREEN_CARET = " => "
+local COLOR_CYAN = ""
+local COLOR_PROMPT = ""
 
 local function pretty(obj, max_depth)
 	if max_depth == nil then max_depth = dbg.pretty_depth end
@@ -469,13 +471,13 @@ repl = function(reason)
 	end
 	
 	local info = debug.getinfo(stack_inspect_offset + CMD_STACK_LEVEL - 3)
-	reason = reason and (COLOR_YELLOW.."break via "..COLOR_RED..reason..GREEN_CARET) or ""
+	reason = reason and (COLOR_YELLOW.."break via "..COLOR_CYAN..reason..GREEN_CARET) or ""
 	dbg_writeln(reason..dbg.format_stack_frame_info(info))
 	
 	if tonumber(dbg.auto_where) then where(info, dbg.auto_where) end
 	
 	repeat
-		local success, done, hook = pcall(run_command, dbg.read(COLOR_RED.."debugger.lua> "..COLOR_RESET))
+		local success, done, hook = pcall(run_command, dbg.read(COLOR_PROMPT.."debugger.lua> "..COLOR_RESET))
 		if success then
 			debug.sethook(hook and hook(0), "crl")
 		else
@@ -667,15 +669,54 @@ if stdin_isatty and not os.getenv("DBG_NOREADLINE") then
 	end)
 end
 
+-- modifications for norns start here
+
+-- don't write to stdout when loading the module
 -- Detect Lua version.
-if jit then -- LuaJIT
-	LUA_JIT_SETLOCAL_WORKAROUND = -1
-	dbg_writeln(COLOR_YELLOW.."debugger.lua: "..COLOR_RESET.."Loaded for "..jit.version)
-elseif "Lua 5.1" <= _VERSION and _VERSION <= "Lua 5.4" then
-	dbg_writeln(COLOR_YELLOW.."debugger.lua: "..COLOR_RESET.."Loaded for ".._VERSION)
+-- if jit then -- LuaJIT
+-- 	LUA_JIT_SETLOCAL_WORKAROUND = -1
+-- 	dbg_writeln(COLOR_YELLOW.."debugger.lua: "..COLOR_RESET.."Loaded for "..jit.version)
+-- elseif "Lua 5.1" <= _VERSION and _VERSION <= "Lua 5.4" then
+-- 	dbg_writeln(COLOR_YELLOW.."debugger.lua: "..COLOR_RESET.."Loaded for ".._VERSION)
+-- else
+-- 	dbg_writeln(COLOR_YELLOW.."debugger.lua: "..COLOR_RESET.."Not tested against ".._VERSION)
+-- 	dbg_writeln("Please send me feedback!")
+-- end
+
+-- force color
+if not DBG_NOCOLOR then
+	COLOR_GRAY = string.char(27) .. "[90m"
+	COLOR_RED = string.char(27) .. "[31m"
+	COLOR_BLUE = string.char(27) .. "[34m"
+	COLOR_YELLOW = string.char(27) .. "[33m"
+	COLOR_RESET = string.char(27) .. "[0m"
+	GREEN_CARET = string.char(27) .. "[32m => "..COLOR_RESET
+	COLOR_CYAN = string.char(27) .. "[36m"
+	COLOR_PROMPT = string.char(27) .. "[35m"
+end
+
+-- get tty being used
+local tty = io.open('/tmp/dbg_tty', 'r+')
+
+if not tty then
+	-- disable debugger to prevent unrecoverable hang
+	print("tools.debugger initialization failed: unable to open tty for reading/writing")
+
+	local mt = getmetatable(dbg)
+	mt.__call = function(_)
+		print("called dbg(), but debugger is disabled due to lack of controlling terminal")
+	end
 else
-	dbg_writeln(COLOR_YELLOW.."debugger.lua: "..COLOR_RESET.."Not tested against ".._VERSION)
-	dbg_writeln("Please send me feedback!")
+	-- use the screen-managed tty for controlling debugger
+	dbg.write = function(str)
+		tty:write(str)
+	end
+
+	dbg.read = function(prompt)
+		tty:write(prompt)
+		tty:flush()
+		return tty:read()
+	end
 end
 
 return dbg

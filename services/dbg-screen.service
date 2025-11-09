@@ -1,0 +1,11 @@
+[Unit]
+Description=screen session for controlling debugger.lua
+
+[Service]
+Type=forking
+User=we
+ExecStart=/home/we/dust/code/tools/scripts/start-dbg-tty.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
