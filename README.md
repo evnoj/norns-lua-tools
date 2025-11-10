@@ -7,7 +7,7 @@ git clone https://github.com/evannjohnson/norns-lua-tools.git /home/we/dust/code
 ```
 
 # usage
-- load all tools with `include(tools/tools)`
+- load all tools with `include("tools/tools")`
 - load a specific tool like `inspect = require("tools.inspect")` or `file = require("tools.pl.file")`
 
 # the tools
@@ -32,12 +32,14 @@ usage:
 - while SSHed into norns, run `screen -r dbg` to connect to the debugger
   - can also `ssh -t we@norns.local screen -r dbg`
   - normal `screen` controls apply, also `ctrl-c` to detach from the session
+    - to scroll, enter `screen`'s "copy mode" with `ctrl-a [`, then use arrow keys or `ctrl-u` and `ctrl-d` to move around in the buffer, and use `q` or escape to return to controlling the debugger
+    - to use the scroll wheel [see this discussion](https://stackoverflow.com/questions/359109/using-the-scrollwheel-in-gnu-screen), requires creating a `.screenrc` config file
   - if the screen session is killed, and a breakpoint is hit, it will freeze norns and likely require a reboot (either via hardware poweroff or `sudo shutdown now`)
 - see [debugger.lua](https://github.com/slembcke/debugger.lua) docs for how to control the debugger
   - the repo has a good interactive tutorial if you clone the repo and run `lua tutorial.lua`
 - while the debugger has suspended execution, norns UI is unresponsive
 - after debugger resumes execution, may need to press K1 a few times to exit/enter system menu for it to become responsive again
-- to easily disable debugger without removing all `dbg()` calls, set `dbg = function() end` to turn the breakpoints into no-ops
+- to easily disable the debugger without removing all `dbg()` calls, set `dbg = function() end` to turn the breakpoints into no-ops
 
 configuration:
 - `dbg.read` and `dbg.write` can be overwritten to change where the debugger is being controlled from (ex. could use a socket)
@@ -46,11 +48,11 @@ configuration:
 
 ---
 
-`debugger.lua` by default reads from stdin and writes to stdout. This doesn't work in norns. We need to have the debugger read and write from something else. We can create a tty with `screen`, connected to a session named `dbg`, and tell the debugger to use that tty. Then we can attach to that tty via `screen`. The systemd service `dbg-screen` calls a script within `tools` when norns starts up. The script uses screen to create the tty, and creates a symlink to it at `/tmp/dbg_tty`. This way we can hardcode the tty path in `debugger.lua`. If the debugger can't open this tty, it does not load.
+`debugger.lua` by default reads from stdin and writes to stdout. This doesn't work in norns. We need to have the debugger read and write from something else. We can create a tty with `screen`, connected to a session named `dbg`, and tell the debugger to use that tty. Then we can attach to that tty via `screen`. The systemd service `dbg-screen` calls a script within `tools` when norns starts up. The script uses `screen` to create the tty, and creates a symlink to it at `/tmp/dbg_tty`. This way we can hardcode the tty path in `debugger.lua`. If the debugger can't open this tty, it does not load.
 - the `screen` session we create doesn't launch a shell, because a shell interferes with the interaction with the debugger. It just runs `sleep infinity`, which basically creates a blank slate tty for us to use.
 
 # notes
-`.lua` files are directly copied rather than using submodules. This is for simplicity. However, it means I must manually update this library. If you need me to update something in this library, let me know.
+Files from other libraries are copied into the repo rather than using submodules. This is for simplicity. However, it means I must manually update this library. If you need me to update something, let me know.
 
 ## compilation
 - compiled `.so` files go into `./bin`, and `package.cpath` needs to have this dir appended to it, `require("tools.add_tools_cpath")()` will accomplish this
