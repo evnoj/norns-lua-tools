@@ -1,13 +1,13 @@
 A repository containing useful lua tools, for use on the [monome norns](https://monome.org/docs/norns/) sound computer.
 
 # installation
-The repo should be cloned into `code/tools`, ex. while SSHed into norns run
+The repo should be cloned into `/usr/local/lib/lua/5.3/`, ex. while SSHed into norns run
 ```sh
-git clone https://github.com/evannjohnson/norns-lua-tools.git /home/we/dust/code/tools
+git clone https://github.com/evannjohnson/norns-lua-tools.git /usr/local/lib/lua/5.3/
 ```
 
 # usage
-- load all tools with `include("tools/tools")`
+- load all tools with `require("tools.tools")`
 - load a specific tool like `inspect = require("tools.inspect")` or `file = require("tools.pl.file")`
 
 # the tools
