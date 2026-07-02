@@ -2,6 +2,7 @@
 -- Copyright (c) 2024 Scott Lembcke and Howling Moon Software
 
 local dbg
+local inspect = require 'tools.inspect'
 
 -- Use ANSI color codes in the prompt by default.
 local COLOR_GRAY = ""
@@ -14,6 +15,10 @@ local COLOR_CYAN = ""
 local COLOR_PROMPT = ""
 
 local function pretty(obj, max_depth)
+	if inspect then
+		return inspect(obj)
+	end
+
 	if max_depth == nil then max_depth = dbg.pretty_depth end
 	
 	-- Returns true if a table has a __tostring metamethod.
